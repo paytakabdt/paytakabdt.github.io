@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Cash Deposit</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS v5.2.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        .bg-light {
+            background-color: #ebebeb !important;
+        }
+
+        .text-primary {
+            color: #00c0ff !important;
+        }
+
+        .btn-primary {
+            border: #00c0ff !important;
+            background: #00c0ff !important;
+        }
+
+        .form-control::placeholder {
+            font-size: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="text-center mt-4">
+            <img height="60px" id="method_img" src="" alt="">
+            <h1 class="mb-3 mt-2 fw-bold" style="color: #707070">
+                উত্তোলন
+            </h1>
+            <p class="mb-0 text-primary" style="font-size: 12px">
+                সময়সীমা <span id="timer">05:00</span>
+            </p>
+        </div>
+        <div class="card my-4"></div>
+
+        <div class="row align-items-center">
+            <div class="col-5">
+                <p class="mb-0 fw-bold text-secondary" style="font-size: 12px">ডিপোজিট পরিমান:</p>
+            </div>
+            <div class="col-7">
+                <div class="bg-light rounded p-2">
+                    <div class="row">
+                        <div class="col pe-0">
+                            <span id="cur_sym" class="mb-0 fw-bold text-secondary">৳</span>
+                            <span id="amount" class="mb-0 text-secondary">500.00</span>
+                        </div>
+                        <div class="col-auto ps-1">
+                            <i onclick="copyTxt('amount')" class="fa-regular fa-copy text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row align-items-center mt-3">
+            <div class="col-5">
+                <p class="mb-0 fw-bold text-secondary" style="font-size: 12px">এজেন্ট নম্বর:</p>
+            </div>
+            <div class="col-7">
+                <div class="bg-light rounded p-2">
+                    <div class="row">
+                        <div class="col pe-0">
+                            <span id="admin_number" class="mb-0 text-secondary">01700000000</span>
+                        </div>
+                        <div class="col-auto ps-1">
+                            <i onclick="copyTxt('admin_number')" class="fa-regular fa-copy text-primary"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card my-4"></div>
+
+        <form id="depositForm" action="" method="post" class="needs-validation" novalidate>
+            <div class="row align-items-center mt-3">
+                <div class="col-5">
+                    <p class="mb-0 fw-bold text-secondary" style="font-size: 12px">সেন্ড মানি ফ্রম:</p>
+                </div>
+                <div class="col-7">
+                    <input type="text" name="send_money_form" class="form-control"
+                        placeholder="যে নাম্বার থেকে সেন্ড মানি করবেন" required>
+                    <div class="invalid-feedback">নগদ থেকে উত্তোলন বাধ্যতামূলক।</div>
+                </div>
+            </div>
+            <div class="row align-items-center mt-3">
+                <div class="col-5">
+                    <p class="mb-0 fw-bold text-secondary" style="font-size: 12px">ট্রানজেকশন আইডি:</p>
+                </div>
+                <div class="col-7">
+                    <input type="text" name="transaction_id" class="form-control"
+                        placeholder="এখানে আপনার ট্রানজেকশন আইডিটা লিখুন।" required>
+                    <div class="invalid-feedback">ট্রানজেকশন আইডি বাধ্যতামূলক।</div>
+                </div>
+            </div>
+            <button type="submit" class="btn btn-primary w-100 mt-5 submitBtn">নিশ্চিত করুন</button>
+        </form>
+    </div>
+    <!-- Bootstrap JavaScript Libraries 5.2.3 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        const getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return false;
+        };
+        const getValue = (parm) => {
+            return getUrlParameter(parm);
+        }
+        const notifyMsg = (msg,cls) => {
+            Swal.fire({
+                position: 'top-end',
+                icon: cls,
+                title: msg,
+                toast:true,
+                showConfirmButton: false,
+                timer: 2500
+            })
+        }
+        const copyTxt = (id) =>{
+            var r = document.createRange();
+            r.selectNode(document.getElementById(id));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            notifyMsg('Copy Success!', 'success')
+        }
+    </script>
+
+    <script>
+        let amount = getValue('amount');
+        let cur_sym = getValue('cur_sym');
+        let currency = getValue('currency');
+        let admin_number = getValue('admin_number');
+        let method = getValue('method');
+        let method_id = getValue('method_id');
+        let method_img = getValue('method_img');
+        let user_id = getValue('user_id');
+        let post_api = getValue('post_api');
+        let home_url = getValue('home_url');
+
+        $('#method_img').attr('src', method_img);
+        $('#cur_sym').html(cur_sym);
+        $('#admin_number').html(admin_number);
+        $('#amount').html(amount);
+    </script>
+
+    <!-- ajax Deposit Form Submit -->
+    <script>
+        $(document).on('submit' , '#depositForm', function (e) {
+            e.preventDefault();
+            $('.submitBtn').attr('disabled', true);
+            $.ajax({
+                url: post_api,
+                type: "POST",
+                data: {
+                    user_id: user_id,
+                    method_id: method_id,
+                    amount: amount,
+                    currency: currency,
+                    user_number: $('[name=send_money_form]').val(),
+                    transaction_id: $('[name=transaction_id]').val(),
+                },
+                success: function (res) {
+                    console.log(res);
+                    if (res.cls != 'success') {
+                        $('.submitBtn').attr('disabled', false);
+                        notifyMsg(res.msg, res.cls)
+                    }
+                    if (res.cls == 'success') {
+                        setTimeout(() => {
+                            location.href = '/deposit-complete?home_url='+home_url;
+                        }, 1000);
+                    }
+                },error: function (err){
+                    $('.submitBtn').attr('disabled', false);
+                }
+            });
+        });
+    </script>
+
+    <!-- Timer -->
+    <script>
+        const startMinutes = 5
+        let time = startMinutes * 60
+        const updateCountDown = () => {
+            const t = setInterval(() => {
+                const minutes = Math.floor(time / 60)
+                const seconds = time % 60
+                const result = `${("0" + minutes).slice(-2)}:${("0" + seconds).slice(-2)}`
+                document.getElementById('timer').innerHTML = result
+                time--
+                if (minutes === 0 && seconds === 0) {
+                    clearInterval(t)
+                }
+            }, 1000)
+        }
+        updateCountDown()
+    </script>
+
+    <script>
+        (() => {
+            'use strict'
+            const forms = document.querySelectorAll('.needs-validation')
+            Array.from(forms).forEach(form => {
+                form.addEventListener('submit', event => {
+                    if (!form.checkValidity()) {
+                        event.preventDefault()
+                        event.stopPropagation()
+                    }
+                    form.classList.add('was-validated')
+                }, false)
+            })
+        })()
+    </script>
+</body>
+
+</html>

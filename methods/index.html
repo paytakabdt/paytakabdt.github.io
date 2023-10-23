@@ -1,0 +1,230 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Method Selection</title>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS v5.2.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet"
+        href="https://maxst.icons8.com/vue-static/landings/line-awesome/line-awesome/1.3.0/css/line-awesome.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css" />
+    <style>
+        .bg-light {
+            background-color: #ebebeb !important;
+        }
+
+        .text-primary {
+            color: #00c0ff !important;
+        }
+
+        .btn-primary {
+            border: #00c0ff !important;
+            background: #00c0ff !important;
+        }
+
+        .form-control::placeholder {
+            font-size: 10px;
+            overflow: hidden;
+        }
+    </style>
+
+    <style>
+        /* gateway-section */
+        .gatewayItem {
+            padding: 10px;
+            border-radius: 11px;
+            border: 1px solid #dee2e6;
+            cursor: pointer;
+        }
+
+        .gatewayActive {
+            border: 2px solid #ffc107 !important;
+        }
+
+        .gatewayItem img {
+            max-width: 110px;
+            width: 100%;
+            transition: transform .2s;
+        }
+
+        .gatewayItem img:hover {
+            transform: scale(1.1);
+        }
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="text-center mt-4">
+            <img height="60px" id="method_img" src="" alt="">
+            <h1 class="mb-3 mt-2 fw-bold" style="color: #707070">
+                গেটওয়ে নির্বাচন
+            </h1>
+        </div>
+        <div class="card my-4"></div>
+        <div class="row" id="Methods">
+            <!-- <div class="col-6">
+                <div class="gatewayItem text-center">
+                    <img width="100%" src="https://i.ibb.co/qrJBgkc/645b60f4dad5c1683710196.png" alt="">
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="gatewayItem text-center">
+                    <img width="100%" src="https://i.ibb.co/zs5ZRjn/645b62ae93d031683710638.png" alt="">
+                </div>
+            </div> -->
+        </div>
+        <button type="button" class="btn btn-primary w-100 mt-5 next-step-submit" disabled>পরবর্তী ধাপ</button>
+        <!-- <form action="">
+            <input type="hidden" name="method" required>
+            <input type="hidden" name="method_id" required>
+            <input type="hidden" name="method_img" required>
+        </form> -->
+    </div>
+    <!-- Bootstrap JavaScript Libraries 5.2.3 -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    
+    
+    <script>
+        const getUrlParameter = function getUrlParameter(sParam) {
+            var sPageURL = window.location.search.substring(1),
+                sURLVariables = sPageURL.split('&'),
+                sParameterName,
+                i;
+
+            for (i = 0; i < sURLVariables.length; i++) {
+                sParameterName = sURLVariables[i].split('=');
+
+                if (sParameterName[0] === sParam) {
+                    return sParameterName[1] === undefined ? true : decodeURIComponent(sParameterName[1]);
+                }
+            }
+            return false;
+        };
+        const getValue = (parm) => {
+            return getUrlParameter(parm);
+        }
+        const notifyMsg = (msg,cls) => {
+            Swal.fire({
+                position: 'top-end',
+                icon: cls,
+                title: msg,
+                toast:true,
+                showConfirmButton: false,
+                timer: 2500
+            })
+        }
+        const copyTxt = (id) =>{
+            var r = document.createRange();
+            r.selectNode(document.getElementById(id));
+            window.getSelection().removeAllRanges();
+            window.getSelection().addRange(r);
+            document.execCommand('copy');
+            window.getSelection().removeAllRanges();
+            notifyMsg('Copy Success!', 'success')
+        }
+    </script>
+
+    <script>
+        let get_methods = getValue('get_methods');
+        let amount = getValue('amount');
+        let cur_sym = getValue('cur_sym');
+        let currency = '';
+        let admin_number = '';
+        let alias = '';
+        let method = '';
+        let method_id = '';
+        let method_img = '';
+        let user_id = getValue('user_id');
+        let post_api = getValue('post_api');
+        let home_url = getValue('home_url');
+    </script>
+
+    <script>
+        $.ajax({
+            type: "get",
+            url: get_methods,
+            success: function (res) {
+                console.log(res.data);
+                let methods = res.data;
+                let html = '';
+                $.each(methods, function (index, value) { 
+                    if ((value.name).toLowerCase() == 'bkash') {
+                        methodLogo = 'https://i.ibb.co/qrJBgkc/645b60f4dad5c1683710196.png';
+                    }else if((value.name).toLowerCase() == 'nagad'){
+                        methodLogo = 'https://i.ibb.co/zs5ZRjn/645b62ae93d031683710638.png';
+                    }else{
+                        methodLogo = ''
+                    }
+
+                    html += `
+                        <div class="col-6">
+                            <div class="gatewayItem text-center" 
+                                data-method_code="${value.method_code}" 
+                                data-currency="${value.currency}" 
+                                data-name="${value.name}"
+                                data-admin_number="${value.admin_number}"
+                                data-logo="${methodLogo}"
+                                data-alias="${value.gateway_alias}">
+                                <img width="100%" src="${methodLogo}" alt="">
+                            </div>
+                        </div>
+                    `;
+                });
+                setTimeout(() => {
+                    if (html != '') {
+                        $('#Methods').html(html);
+                    }
+                }, 1000);
+            }
+        });
+    </script>
+
+    <script>
+        $(document).on('click', '.gatewayItem', function (e) {
+            e.preventDefault();
+            method = $(this).data("name");
+            alias = $(this).data("alias");
+            method_id = $(this).data("method_code");
+            currency = $(this).data("currency");
+            method_img = $(this).data("logo");
+            admin_number = $(this).data("admin_number");
+
+            if (method != '' || method_id != '' || currency != '') {
+                $('.next-step-submit').removeAttr('disabled');
+            }else{
+                $('.next-step-submit').attr('disabled', true);
+            }
+
+            $('.gatewayItem').removeClass('gatewayActive');
+            $(this).addClass('gatewayActive');
+        });
+
+        console.log(window.location.origin);
+    </script>
+
+    
+
+    <script>
+        $(document).on('click', '.next-step-submit', function (e) {
+            e.preventDefault();
+
+            if (method == '' || method_id == '' || currency == '') {
+                return notifyMsg('Select any Payment Method!', 'warning');
+            }
+
+            location.href = `${window.location.origin}/cash-deposit?amount=${amount}&&method=${method}&&method_id=${method_id}&&cur_sym=${cur_sym}&&currency=${currency}&&user_id=${user_id}&&home_url=${home_url}&&admin_number=${admin_number}&&post_api=${post_api}&&method_img=${method_img}`;
+
+            
+        });
+    </script>
+
+</body>
+
+</html>
